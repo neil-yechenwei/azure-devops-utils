@@ -103,7 +103,7 @@ throw_if_empty resource_group $resource_group
 throw_if_empty vault_name $vault_name
 throw_if_empty storage_account_name $storage_account_name
 throw_if_empty storage_account_key $storage_account_key
-throw_if_empty vm_fqdn $vm_fqd
+throw_if_empty vm_fqdn $vm_fqdn
 throw_if_empty use_ssh_public_key $use_ssh_public_key
 throw_if_empty region $region
 default_hal_config="/home/$jenkins_username/.hal/default"
