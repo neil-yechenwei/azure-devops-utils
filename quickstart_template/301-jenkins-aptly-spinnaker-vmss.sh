@@ -153,27 +153,21 @@ echo "$jenkins_password" | hal config ci jenkins master add Jenkins \
 hal config ci jenkins enable
 
 # Deploy Spinnaker to local VM
-sudo hal deploy apply && run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" >> "$front50_settings"
-
+sudo hal deploy apply
+run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" >> "$front50_settings"
 run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}" >> "$front50_settings"
-
 run_util_script "jenkins/add-aptly-build-job.sh" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" >> "$front50_settings"
-
 echo "Setting up initial user..."
-
 # Using single quote for username and password here to avoid dollar sign being recognized as start of variable
 echo "jenkins.model.Jenkins.instance.securityRealm.createAccount('$jenkins_username', '$jenkins_password')"  > addUser.groovy
 run_util_script "jenkins/run-cli-command.sh" -cif "addUser.groovy" -c "groovy ="
 rm "addUser.groovy"
-
 # Change the Jenkins port in order not to conflict with the Spinnaker front50 port
 port=8082
 sed -i -e "s/\(HTTP_PORT=\).*/\1$port/"  /etc/default/jenkins
 service jenkins restart
-
 # If redis is not started, start the redis-server
 netstat -tln | grep ":6379 "
-
 if [ $? -eq 1 ]
 then
         echo "Redis is not started. Start the redis-server."
