@@ -127,7 +127,6 @@ echo "$app_key" | hal config provider azure account add my-azure-account \
   --default-key-vault "$vault_name" \
   --default-resource-group "$resource_group" \
   --packer-resource-group "$resource_group" \
-  --useSshPublicKey "$use_ssh_public_key" \
   --app-key
 
 #change region if region not in eastus or westus
