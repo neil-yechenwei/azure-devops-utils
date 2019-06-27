@@ -112,10 +112,16 @@ throw_if_empty storage_account_key $storage_account_key
 throw_if_empty vm_fqdn $vm_fqdn
 throw_if_empty use_ssh_public_key $use_ssh_public_key
 
+templog="/home/$username/.hal/default/service-settings/data.log"
+sudo -u $username mkdir -p $(dirname "$templog")
+sudo -u $username touch "$templog"
+
 #installed on the vmss if there is no aks_cluster_name, otherwise installed on aks
 if [ -z "$aks_cluster_name" ]
 then
+      echo "run_util_script quickstart_template/301-jenkins-aptly-spinnaker-vmss.sh -ju $username -jp $jenkins_password -ai $app_id -ak $app_key -ti $tenant_id -si $subscription_id -rg $resource_group -vn $vault_name -san $storage_account_name -sak $storage_account_key -vf $vm_fqdn -r $region -al $artifacts_location -st $artifacts_location_sas_token -uspk $use_ssh_public_key" > "$templog"
       run_util_script "quickstart_template/301-jenkins-aptly-spinnaker-vmss.sh"  -ju "$username" -jp "$jenkins_password" -ai "$app_id" -ak "$app_key" -ti "$tenant_id" -si "$subscription_id" -rg "$resource_group" -vn "$vault_name" -san "$storage_account_name" -sak "$storage_account_key" -vf "$vm_fqdn" -r "$region" -al "$artifacts_location" -st "$artifacts_location_sas_token" -uspk "$use_ssh_public_key"
 else
+      echo "run_util_script quickstart_template/101-spinnaker-aks.sh -u $username -ai $app_id -ak $app_key -ti $tenant_id -si $subscription_id -rg $resource_group -vn $vault_name -acn $aks_cluster_name -arg $aks_resource_group -san $storage_account_name -sak $storage_account_key -r $region -al $artifacts_location -st $artifacts_location_sas_token -uspk $use_ssh_public_key" > "$templog"
       run_util_script "quickstart_template/101-spinnaker-aks.sh"  -u "$username" -ai "$app_id" -ak "$app_key" -ti "$tenant_id" -si "$subscription_id" -rg "$resource_group" -vn "$vault_name" -acn "$aks_cluster_name" -arg "$aks_resource_group" -san "$storage_account_name" -sak "$storage_account_key" -r "$region" -al "$artifacts_location" -st "$artifacts_location_sas_token" -uspk "$use_ssh_public_key"
 fi
