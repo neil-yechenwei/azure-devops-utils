@@ -146,7 +146,9 @@ hal config ci jenkins enable
 # Deploy Spinnaker to local VM
 sudo hal deploy apply
 run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}"
-run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}" run_util_script "jenkins/add-aptly-build-job.sh" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" echo "Setting up initial user..."
+run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}"
+run_util_script "jenkins/add-aptly-build-job.sh" -al "${artifacts_location}" -st "${artifacts_location_sas_token}"
+echo "Setting up initial user..."
 # Using single quote for username and password here to avoid dollar sign being recognized as start of variable
 echo "jenkins.model.Jenkins.instance.securityRealm.createAccount('$jenkins_username', '$jenkins_password')" > addUser.groovy
 run_util_script "jenkins/run-cli-command.sh" -cif "addUser.groovy" -c "groovy ="
