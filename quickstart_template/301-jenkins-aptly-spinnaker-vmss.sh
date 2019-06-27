@@ -47,7 +47,8 @@ function run_util_script() {
 region="westus"
 repository_name="hello-karyon-rxnetty"
 artifacts_location="https://raw.githubusercontent.com/Azure/azure-devops-utils/master/"
-artifacts_location_sas_token="" while [[ $# > 0 ]]
+artifacts_location_sas_token=""
+while [[ $# > 0 ]]
 do
   key="$1"
   shift
