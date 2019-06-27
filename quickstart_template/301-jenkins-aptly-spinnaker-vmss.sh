@@ -142,6 +142,7 @@ echo "$app_key" | hal config provider azure account add my-azure-account \
   --default-key-vault "$vault_name" \
   --default-resource-group "$resource_group" \
   --packer-resource-group "$resource_group" \
+  --useSshPublicKey "$use_ssh_public_key" \
   --app-key
 
 #change region if region not in eastus or westus
@@ -172,26 +173,26 @@ echo "hal deploy apply" >> "$front50_settings"
 sudo hal deploy apply
 
 echo "install_jenkins" >> "$front50_settings"
-run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}"
+run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" >> "$front50_settings"
 
 echo "init-aptly-repo" >> "$front50_settings"
-run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}"
+run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}" >> "$front50_settings"
 
 echo "add-aptly-build-job" >> "$front50_settings"
-run_util_script "jenkins/add-aptly-build-job.sh" -al "${artifacts_location}" -st "${artifacts_location_sas_token}"
+run_util_script "jenkins/add-aptly-build-job.sh" -al "${artifacts_location}" -st "${artifacts_location_sas_token}" >> "$front50_settings"
 
 echo "Setting up initial user..." >> "$front50_settings"
 
 # Using single quote for username and password here to avoid dollar sign being recognized as start of variable
 echo "jenkins.model.Jenkins.instance.securityRealm.createAccount('$jenkins_username', '$jenkins_password')"  > addUser.groovy
-run_util_script "jenkins/run-cli-command.sh" -cif "addUser.groovy" -c "groovy ="
+run_util_script "jenkins/run-cli-command.sh" -cif "addUser.groovy" -c "groovy =" >> "$front50_settings"
 rm "addUser.groovy"
 
 echo "1232..." >> "$front50_settings"
 # Change the Jenkins port in order not to conflict with the Spinnaker front50 port
 port=8082
 sed -i -e "s/\(HTTP_PORT=\).*/\1$port/"  /etc/default/jenkins
-service jenkins restart
+service jenkins restart >> "$front50_settings"
 
 echo "123233333..." >> "$front50_settings"
 # If redis is not started, start the redis-server
