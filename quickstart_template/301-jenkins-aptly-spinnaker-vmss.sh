@@ -145,8 +145,6 @@ echo "$jenkins_password" | hal config ci jenkins master add Jenkins \
 
 hal config ci jenkins enable
 
-sudo hal deploy apply >/dev/null
-
 run_util_script "jenkins/install_jenkins.sh" -jf "${vm_fqdn}" -al "${artifacts_location}" -st "${artifacts_location_sas_token}"
 
 run_util_script "jenkins/init-aptly-repo.sh" -vf "${vm_fqdn}" -rn "${repository_name}"
@@ -164,6 +162,8 @@ port=8082
 sed -i -e "s/\(HTTP_PORT=\).*/\1$port/" /etc/default/jenkins
 
 service jenkins restart
+
+sudo hal deploy apply
 
 # If redis is not started, start the redis-server
 netstat -tln | grep ":6379 "
